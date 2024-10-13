@@ -37,7 +37,13 @@ jobs:
         DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
         COMMIT_ACTOR: ${{ github.actor }}
         COMMIT_SHA: ${{ github.sha }}
-      run: docker run -d -p 8080:8080 $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA
+      run: docker run -d -p 8080:8080 --name nodejs $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA
+
+    - name: Wait for Container to be ready # Espera o container estar pronto
+      run: sleep 10 # Espera 10 segundos
+
+    - name: Check if container is running # Verifica se o container está rodando
+      run: docker ps -f 'name=nodejs' # Checa se o container está rodando
 
     - name: Test Docker image
       run: curl http://localhost:8080
