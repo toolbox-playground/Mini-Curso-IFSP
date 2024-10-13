@@ -1,0 +1,54 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Build Docker image
+      run: cd nodejs && docker build -t nodejs-ci-cd .
+
+    - name: Push Docker image to Docker Hub
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+        COMMIT_SHA: ${{ github.sha }}
+        COMMIT_ACTOR: ${{ github.actor }}
+      run: |
+        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+        docker tag nodejs-ci-cd $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA
+        docker push $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA
+
+    - name: Run Docker image
+      run: docker run $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA --p 8080:8080
+
+    - name: Test Docker image
+      run: curl http://localhost:8080
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install gcloud CLI
+      run: |
+        pip install google-cloud-sdk
+
+    - name: Deploy on Cloud Run
+      env:
+        GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+        GCP_KEY: ${{ secrets.GCP_KEY }}
+      run: |
+        echo $GCP_KEY > /tmp/key.json
+        gcloud auth activate-service-account --key-file=/tmp/key.json
+        gcloud config set project $GCP_PROJECT
+        gcloud run deploy nodejs-ci-cd-$COMMIT_ACTOR --image $DOCKER_REPOSITORY/nodejs-ci-cd:{{ github.actor }}-{{ github.sha }} --platform managed --region us-central1 --allow-unauthenticated
