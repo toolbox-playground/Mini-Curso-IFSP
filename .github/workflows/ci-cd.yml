@@ -37,7 +37,7 @@ jobs:
         DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
         COMMIT_ACTOR: ${{ github.actor }}
         COMMIT_SHA: ${{ github.sha }}
-      run: docker run -p 8080:8080 $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA
+      run: docker run -d -p 8080:8080 $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA
 
     - name: Test Docker image
       run: curl http://localhost:8080
