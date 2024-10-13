@@ -26,20 +26,22 @@ jobs: # Define os trabalhos a serem execut
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} # Nome de usuário do Docker Hub
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} # Senha do Docker Hub
         DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }} # Repositório Docker
+        DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }} # Nome da Imagem Docker
         COMMIT_SHA: ${{ github.sha }} # SHA do commit
         COMMIT_ACTOR: ${{ github.actor }} # Autor do commit
       # Comando para fazer o login no Docker Hub, tag da imagem Docker e push da imagem Docker
       run: |
         echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin # Login no Docker Hub
-        docker tag nodejs-ci-cd $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA # Tag da imagem Docker
-        docker push $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA # Push da imagem Docker
+        docker tag $DOCKER_IMAGE_NAME $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$COMMIT_ACTOR-$COMMIT_SHA # Tag da imagem Docker
+        docker push $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$COMMIT_ACTOR-$COMMIT_SHA # Push da imagem Docker
 
     - name: Run Docker image # Executa a imagem Docker
       env: # Define as variáveis de ambiente
         DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }} # Repositório Docker
+        DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }} # Nome da Imagem Docker
         COMMIT_ACTOR: ${{ github.actor }} # Autor do commit
         COMMIT_SHA: ${{ github.sha }} # SHA do commit
-      run: docker run -d -p 8080:8080 --name nodejs $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA # Executa o container Docker
+      run: docker run -d -p 8080:8080 --name nodejs $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$COMMIT_ACTOR-$COMMIT_SHA # Executa o container Docker
 
     - name: Wait for Container to be ready # Espera o container estar pronto
       run: sleep 10 # Espera 10 segundos
@@ -73,7 +75,7 @@ jobs: # Define os trabalhos a serem execut
       uses: 'google-github-actions/deploy-cloudrun@v2' # Usa a ação de deploy no Cloud Run
       with: 
         service: ${{ github.actor }} # Nome do serviço no Cloud Run
-        image: "${{ vars.DOCKER_REPOSITORY }}/nodejs-ci-cd:${{ github.actor }}-${{ github.sha }}" # Imagem a ser usada no Cloud Run
+        image: "${{ vars.DOCKER_REPOSITORY }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ github.actor }}-${{ github.sha }}" # Imagem a ser usada no Cloud Run
         flags: '--allow-unauthenticated' # Flags para o deploy no Cloud Run que libera o acesso para usuários não autenticados
 
     - name: 'Access Cloud Run' # Usa o CLI do Google Cloud
