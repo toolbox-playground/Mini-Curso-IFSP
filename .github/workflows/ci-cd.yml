@@ -58,6 +58,9 @@ jobs:
     
     steps:
 
+    - name: Checkout repository # Faz o checkout do repositório
+      uses: actions/checkout@v2 # Usa a ação de checkout do repositório
+
     - name: Deploy on Cloud Run # Faz o deploy da aplicação no Cloud Run
       uses: 'google-github-actions/auth@v2' # Usa a ação de autenticação do Google Cloud
       with: # Define os parâmetros da ação
