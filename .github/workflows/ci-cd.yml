@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch: # Evento que aciona o fluxo de trabalho manualmente
+    inputs: # Define os inputs do fluxo de trabalho
+      name: # Define o input "name"
+        description: 'Trigger manual do Workflow' # Descrição do input
 
 jobs:
   build:
@@ -29,6 +33,10 @@ jobs:
         docker push $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA
 
     - name: Run Docker image
+      env:
+        DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+        COMMIT_ACTOR: ${{ github.actor }}
+        COMMIT_SHA: ${{ github.sha }}
       run: docker run $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA --p 8080:8080
 
     - name: Test Docker image
