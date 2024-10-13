@@ -1,5 +1,5 @@
 # Mini Curso IFSP
-![Toolbox](img/toolbox.jpg)
+![Toolbox](img/toolbox-playground.png)
 
 ![Mini Curso](img/mini-curso.png)
 
