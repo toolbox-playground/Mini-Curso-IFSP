@@ -48,6 +48,16 @@ jobs:
     - name: Test Docker image
       run: curl http://localhost:8080
 
+  cloud_run:
+    name: Deploy on Cloud Run # Nome do trabalho
+    runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado (no caso, Ubuntu)
+    needs: build # Define que o trabalho depende do trabalho "build"
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    
+    steps:
+
     - name: Deploy on Cloud Run # Faz o deploy da aplicação no Cloud Run
       uses: 'google-github-actions/auth@v2' # Usa a ação de autenticação do Google Cloud
       with: # Define os parâmetros da ação
