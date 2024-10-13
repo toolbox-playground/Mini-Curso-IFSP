@@ -32,8 +32,8 @@ name: CI/CD Pipeline
 
 on: # Define os eventos que acionam o workflow
   push: # Aciona o workflow quando há um push
-    branches: # Define as branches que acionam o workflow
-      - main # Aciona o workflow quando há um push na branch main
+    paths:
+      - 'nodejs/**' # Define o diretório que aciona o workflow
   workflow_dispatch: # Aciona o workflow manualmente
     inputs: # Define os inputs do workflow
       name: # Nome do input
