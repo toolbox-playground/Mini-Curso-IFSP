@@ -24,7 +24,7 @@ jobs:
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-        DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+        DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }}
         COMMIT_SHA: ${{ github.sha }}
         COMMIT_ACTOR: ${{ github.actor }}
       run: |
@@ -34,7 +34,7 @@ jobs:
 
     - name: Run Docker image
       env:
-        DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+        DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }}
         COMMIT_ACTOR: ${{ github.actor }}
         COMMIT_SHA: ${{ github.sha }}
       run: docker run -d -p 8080:8080 --name nodejs $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA
@@ -69,7 +69,7 @@ jobs:
       
     - id: 'deploy' # Define um ID para o passo
       env:
-        DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+        DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }}
         COMMIT_SHA: ${{ github.sha }}
         COMMIT_ACTOR: ${{ github.actor }}
       uses: 'google-github-actions/deploy-cloudrun@v2' # Usa a ação de deploy no Cloud Run
