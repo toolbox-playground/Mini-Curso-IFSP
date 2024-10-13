@@ -1,7 +1,7 @@
 # Mini Curso IFSP
 ![Toolbox Playground](img/toolbox-playground.png)
 
-<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTkr15PAkf7aTexkYRFHHB8Ro32c4R20aWf7dTKRDm2QY3FmUoZ9z3NAl17LeLAw0rUNP0Rc3u6fmOq/embed?start=false&loop=false&delayms=3000" frameborder="0" width="1440" height="839" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+![Mini Curso](img/mini-curso.png)
 
 Neste mini-curso serão abordados conceitos essenciais e práticas relacionadas ao DevOps, Docker e Cloud Computing. 
 
