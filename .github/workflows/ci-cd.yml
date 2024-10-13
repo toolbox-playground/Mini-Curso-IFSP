@@ -37,7 +37,7 @@ jobs:
         DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
         COMMIT_ACTOR: ${{ github.actor }}
         COMMIT_SHA: ${{ github.sha }}
-      run: docker run $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA --p 8080:8080
+      run: docker run -p 8080:8080 $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA
 
     - name: Test Docker image
       run: curl http://localhost:8080
@@ -55,8 +55,10 @@ jobs:
       env:
         GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
         GCP_KEY: ${{ secrets.GCP_KEY }}
+        COMMIT_ACTOR: ${{ github.actor }}
+        COMMIT_SHA: ${{ github.sha }}
       run: |
         echo $GCP_KEY > /tmp/key.json
         gcloud auth activate-service-account --key-file=/tmp/key.json
         gcloud config set project $GCP_PROJECT
-        gcloud run deploy nodejs-ci-cd-$COMMIT_ACTOR --image $DOCKER_REPOSITORY/nodejs-ci-cd:{{ github.actor }}-{{ github.sha }} --platform managed --region us-central1 --allow-unauthenticated
+        gcloud run deploy nodejs-ci-cd-$COMMIT_ACTOR --image $DOCKER_REPOSITORY/nodejs-ci-cd:$COMMIT_ACTOR-$COMMIT_SHA --platform managed --region us-central1 --allow-unauthenticated
