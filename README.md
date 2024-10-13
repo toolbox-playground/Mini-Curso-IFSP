@@ -204,7 +204,7 @@ Adicionar no Repository Secret
 WORKLOAD_IDENTIFIER_PROVIDER = projects/794011605223/locations/global/workloadIdentityPools/ifsp-github-toolbox-actions-pool/providers/ifsp-ifsp-github-actions-oidc
 SERVICE_ACCOUNT = github-actions@toolbox-sandbox-388523.iam.gserviceaccount.com
 
-### Acesso para usuários não autenticados
+### Se não conseguir acessar pelo browser e aparecer acesso não autorizado
 
 Após realizado o deploy:
 1. Ir até [Cloud Run](https://console.cloud.google.com/run)
