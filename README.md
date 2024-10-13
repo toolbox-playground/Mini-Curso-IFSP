@@ -47,7 +47,7 @@ jobs: # Define os trabalhos a serem execut
       uses: actions/checkout@v2 # Usa a ação de checkout do repositório
 
     - name: Build Docker image # Constrói a imagem Docker
-      run: cd nodejs && docker build -t nodejs-ci-cd . # Comando para construir a imagem Docker
+      run: cd nodejs && docker build -t $DOCKER_IMAGE_NAME . # Comando para construir a imagem Docker 
 
     - name: Push Docker image to Docker Hub # Faz o push da imagem Docker para o Docker Hub
       env:
