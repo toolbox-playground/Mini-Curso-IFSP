@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on: # Define os eventos que acionam o workflow
   push: # Aciona o workflow quando há um push
-    branches: # Define as branches que acionam o workflow
-      - main # Aciona o workflow quando há um push na branch main
-  pull_request: # Aciona o workflow quando há um pull request
+    paths-ignore:
+      - 'README.md'  # Ignora o arquivo README.md
+      - '.gitgnore'  # Ignora o arquivo .gitignore
   workflow_dispatch: # Aciona o workflow manualmente
     inputs: # Define os inputs do workflow
       name: # Nome do input
