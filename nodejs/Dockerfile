@@ -1,5 +1,5 @@
 # Usa a imagem base oficial do Node.js (Para ambiente produtivo, lembre-se de evitar o uso de LATEST)
-FROM node:latest
+FROM node:alpine
 
 # Cria um diretório chamado "node-app" dentro do diretório home do container
 RUN mkdir -p /home/node-app
