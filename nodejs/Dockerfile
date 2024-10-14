@@ -16,5 +16,5 @@ RUN npm install
 # Exponha a porta 8080
 EXPOSE 8080
 
+# Define o comando padrão a ser executado quando o container é iniciado. Neste caso, ele executa o comando npm start, que está definido no package.json como sendo node server.js, que inicia o servidor Node.js.
 CMD ["npm", "start"]
-# Define o comando padrão a ser executado quando o container é iniciado. Neste caso, ele executa o comando "node app/server.js", que inicia o servidor Node.js.
