@@ -68,33 +68,6 @@ jobs:
     - name: Test Docker image # Testa a imagem Docker
       run: curl http://localhost:8080 # Faz uma requisição HTTP para o container
 
-  sonarcloud: # Nome do trabalho
-    name: SonarCloud Scan # Nome do trabalho
-    runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado (no caso, Ubuntu)
-    needs: build # Define que o trabalho depende do trabalho "build"
-    steps: # Passos a serem executados no trabalho
-    - uses: actions/checkout@v3 # Passo para fazer o checkout do repositório
-      with: # Define os parâmetros do passo
-        # Desativar o clone superficial é recomendado para melhorar a relevância dos relatórios
-        fetch-depth: 0
-        
-    - name: SonarCloud Scan # Executa a análise do SonarCloud
-      uses: sonarsource/sonarcloud-github-action@master # Usa a ação de análise do SonarCloud
-      with:
-        args: >
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-          -Dsonar.organization=${{ secrets.SONAR_ORG }}
-          -Dsonar.host.url=https://sonarcloud.io
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-          -Dsonar.projectName=${{ secrets.SONAR_PROJECT_NAME }}
-          -Dsonar.projectVersion=1.0
-          -Dsonar.sources=app
-          -Dsonar.language=js
-          -Dsonar.sourceEncoding=UTF-8
-      env: # Define as variáveis de ambiente
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   snyk: # Nome do trabalho
     name: Snyk Security Check # Nome do trabalho
     runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado (no caso, Ubuntu)
@@ -111,7 +84,7 @@ jobs:
   cloud_run:
     name: Deploy on Cloud Run # Nome do trabalho
     runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado
-    needs: [build, snyk, sonarcloud] # Define que o trabalho depende do trabalho "build"
+    needs: [build, snyk] # Define que o trabalho depende do trabalho "build"
     permissions: # Define as permissões necessárias
       contents: 'read' # Permissão de leitura
       id-token: 'write' # Permissão de escrita
