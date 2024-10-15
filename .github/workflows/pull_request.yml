@@ -1,4 +1,4 @@
-name: Publish Docker image version
+name: Pull Request
 
 on:
   pull_request:   # Evento que aciona o fluxo de trabalho (no caso, um puul request)
