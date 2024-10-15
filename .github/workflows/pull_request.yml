@@ -91,9 +91,9 @@ jobs:
           -Dsonar.sources=app
           -Dsonar.language=js
           -Dsonar.sourceEncoding=UTF-8
-    #   env: # Define as variáveis de ambiente
+      env: # Define as variáveis de ambiente
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   snyk: # Nome do trabalho
     name: Snyk Security Check # Nome do trabalho
