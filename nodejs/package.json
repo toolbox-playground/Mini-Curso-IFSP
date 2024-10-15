@@ -4,12 +4,16 @@
   "description": "Criado para o propósito de compartilhar conhecimentos e exemplos práticos",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node server.js"
   },
   "author": "Toolbox Company",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "mocha": "^10.2.0",
+    "request": "^2.88.2"
   }
 }
