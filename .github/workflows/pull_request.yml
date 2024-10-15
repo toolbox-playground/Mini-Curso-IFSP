@@ -1,0 +1,139 @@
+name: Publish Docker image version
+
+on:
+  pull_request:   # Evento que aciona o fluxo de trabalho (no caso, um puul request)
+  workflow_dispatch: # Evento que aciona o fluxo de trabalho manualmente
+    inputs: # Define os inputs do fluxo de trabalho
+      name: # Define o input "name"
+        description: 'Trigger manual do Workflow' # Descrição do input
+
+jobs:
+
+  test: # Nome do trabalho
+    name: Test Node.js # Nome do trabalho
+    runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado (no caso, Ubuntu)
+    steps: # Passos a serem executados no trabalho
+    - uses: actions/checkout@v4 # Passo para fazer o checkout do repositório
+    - name: Test Node.js # Nome do passo
+      uses: actions/setup-node@v4 # Passo para configurar o ambiente Node.js
+      with:
+        node-version: '18.x' # Versão do Node.js a ser usada
+    - name: Install dependencies # Nome do passo
+      run: cd app && npm install # Comando para instalar as dependências do projeto
+    - name: Run tests # Nome do passo
+      run: cd app && npm test # Comando para executar os testes do projeto
+
+  build: # Nome do trabalho
+    name: Build Docker image # Nome do trabalho
+    runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado
+    needs: test # Define que o trabalho depende do trabalho "test"
+
+    steps: # Passos a serem executados no trabalho
+    - name: Checkout code # Faz o checkout do código
+      uses: actions/checkout@v2 # Usa a ação de checkout do repositório
+
+    - name: Build Docker image # Constrói a imagem Docker
+      env:
+        DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }} # Nome da Imagem Docker
+      run: cd nodejs && docker build -t $DOCKER_IMAGE_NAME . # Comando para construir a imagem Docker
+
+    - name: Push Docker image to Docker Hub # Faz o push da imagem Docker para o Docker Hub
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} # Nome de usuário do Docker Hub
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }} # Senha do Docker Hub
+        DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }} # Repositório Docker
+        DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }} # Nome da Imagem Docker
+        COMMIT_SHA: ${{ github.sha }} # SHA do commit
+        COMMIT_ACTOR: ${{ github.actor }} # Autor do commit
+      # Comando para fazer o login no Docker Hub, tag da imagem Docker e push da imagem Docker
+      run: |
+        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin # Login no Docker Hub
+        docker tag $DOCKER_IMAGE_NAME $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$COMMIT_ACTOR-$COMMIT_SHA # Tag da imagem Docker
+        docker push $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$COMMIT_ACTOR-$COMMIT_SHA # Push da imagem Docker
+
+    - name: Run Docker image # Executa a imagem Docker
+      env: # Define as variáveis de ambiente
+        DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }} # Repositório Docker
+        DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }} # Nome da Imagem Docker
+        COMMIT_ACTOR: ${{ github.actor }} # Autor do commit
+        COMMIT_SHA: ${{ github.sha }} # SHA do commit
+      run: docker run -d -p 8080:8080 --name nodejs $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$COMMIT_ACTOR-$COMMIT_SHA # Executa o container Docker
+
+    - name: Wait for Container to be ready # Espera o container estar pronto
+      run: sleep 10 # Espera 10 segundos
+
+    - name: Check if container is running # Verifica se o container está rodando
+      run: docker ps -f 'name=nodejs' # Checa se o container está rodando
+
+    - name: Test Docker image # Testa a imagem Docker
+      run: curl http://localhost:8080 # Faz uma requisição HTTP para o container
+
+  sonarcloud: # Nome do trabalho
+    name: SonarCloud Scan # Nome do trabalho
+    runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado (no caso, Ubuntu)
+    needs: build # Define que o trabalho depende do trabalho "build"
+    steps: # Passos a serem executados no trabalho
+    - uses: actions/checkout@v3 # Passo para fazer o checkout do repositório
+      with: # Define os parâmetros do passo
+        # Desativar o clone superficial é recomendado para melhorar a relevância dos relatórios
+        fetch-depth: 0
+        
+    - name: SonarCloud Scan # Executa a análise do SonarCloud
+      uses: sonarsource/sonarcloud-github-action@master # Usa a ação de análise do SonarCloud
+      with:
+        args: >
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+          -Dsonar.organization=${{ secrets.SONAR_ORG }}
+          -Dsonar.host.url=https://sonarcloud.io
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.projectName=${{ secrets.SONAR_PROJECT_NAME }}
+          -Dsonar.projectVersion=1.0
+          -Dsonar.sources=app
+          -Dsonar.language=js
+          -Dsonar.sourceEncoding=UTF-8
+    #   env: # Define as variáveis de ambiente
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  snyk: # Nome do trabalho
+    name: Snyk Security Check # Nome do trabalho
+    runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado (no caso, Ubuntu)
+    needs: build # Define que o trabalho depende do trabalho "build"
+    steps: # Passos a serem executados no trabalho
+      - uses: actions/checkout@master # Passo para fazer o checkout do repositório
+      - name: Run Snyk to check for vulnerabilities # Executa o Snyk para verificar vulnerabilidades
+        uses: snyk/actions/node@master # Usa a ação do Snyk para Node.js
+        with: # Define os parâmetros da ação
+          args: --all-projects # Veirifica todas as dependências do projeto
+        env: # Define as variáveis de ambiente
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} # Define o token do Snyk
+
+  cloud_run:
+    name: Deploy on Cloud Run # Nome do trabalho
+    runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado
+    needs: [build, snyk, sonarcloud] # Define que o trabalho depende do trabalho "build"
+    permissions: # Define as permissões necessárias
+      contents: 'read' # Permissão de leitura
+      id-token: 'write' # Permissão de escrita
+    
+    steps: # Passos a serem executados no trabalho
+
+    - name: Checkout repository # Faz o checkout do repositório
+      uses: actions/checkout@v2 # Usa a ação de checkout do repositório
+
+    - name: Deploy on Cloud Run # Faz o deploy da aplicação no Cloud Run
+      uses: 'google-github-actions/auth@v2' # Usa a ação de autenticação do Google Cloud
+      with: # Define as variáveis de autenticação
+        workload_identity_provider: ${{ secrets.WORKLOAD_IDENTIFIER_PROVIDER }} # Provedor de identidade do workload
+        service_account: ${{ secrets.SERVICE_ACCOUNT }} # Conta de serviço
+      
+    - id: 'deploy' # Define um ID para o passo
+      uses: 'google-github-actions/deploy-cloudrun@v2' # Usa a ação de deploy no Cloud Run
+      with: 
+        service: "DevOps" # Nome do serviço no Cloud Run
+        image: "${{ vars.DOCKER_REPOSITORY }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ github.actor }}-${{ github.sha }}" # Imagem a ser usada no Cloud Run
+        flags: '--allow-unauthenticated' # Flags para o deploy no Cloud Run que libera o acesso para usuários não autenticados
+
+    - name: 'Access Cloud Run' # Usa o CLI do Google Cloud
+      run: "curl -s ${{ steps.deploy.outputs.url }}" # Acessa o Cloud Run
+      continue-on-error: true # Continua a execução mesmo se houver erroro
