@@ -13,6 +13,7 @@
     "express": "^4.17.1"
   },
   "devDependencies": {
+    "cheerio": "^1.0.0",
     "mocha": "^10.2.0",
     "request": "^2.88.2"
   }
