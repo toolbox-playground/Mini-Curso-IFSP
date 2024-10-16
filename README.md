@@ -213,3 +213,5 @@ Após realizado o deploy:
 4. Em Autenticação, marca `Allow unauthenticated invocations` para permitir acesso a Cloud Run.
 
 Uma recomendação do produto Cloud Run é que sistemas CI/CD não definam ou alterem as configurações para permitir invocações não autenticadas. Novas implantações são automaticamente serviços privados, enquanto a implantação de uma revisão de um serviço público (não autenticado) preservará a configuração IAM de público (não autenticado). Para mais informações, consulte [Controlando o acesso em um serviço individual](https://cloud.google.com/run/docs/securing/managing-access).
+
+![Mentoria](img/MENTORIA_DEVOPS.png)
