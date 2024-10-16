@@ -1,7 +1,7 @@
 # Mini Curso IFSP
 ![Toolbox](img/toolbox-playground.png)
 
-[![Mini Curso](img/mini-curso.png)](https://docs.google.com/presentation/d/e/2PACX-1vTkr15PAkf7aTexkYRFHHB8Ro32c4R20aWf7dTKRDm2QY3FmUoZ9z3NAl17LeLAw0rUNP0Rc3u6fmOq/pub?start=false&loop=false&delayms=3000)
+[![Mini Curso](img/mini-curso.png)](https://docs.google.com/presentation/d/e/2PACX-1vTkr15PAkf7aTexkYRFHHB8Ro32c4R20aWf7dTKRDm2QY3FmUoZ9z3NAl17LeLAw0rUNP0Rc3u6fmOq/pub?start=false&loop=false&delayms=3000){:target="_blank"}
 
 [Slides](https://docs.google.com/presentation/d/e/2PACX-1vTkr15PAkf7aTexkYRFHHB8Ro32c4R20aWf7dTKRDm2QY3FmUoZ9z3NAl17LeLAw0rUNP0Rc3u6fmOq/pub?start=false&loop=false&delayms=3000)
 
