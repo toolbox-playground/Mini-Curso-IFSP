@@ -3,6 +3,8 @@
 
 ![Mini Curso](img/mini-curso.png)
 
+[Slides](https://docs.google.com/presentation/d/e/2PACX-1vTkr15PAkf7aTexkYRFHHB8Ro32c4R20aWf7dTKRDm2QY3FmUoZ9z3NAl17LeLAw0rUNP0Rc3u6fmOq/pub?start=false&loop=false&delayms=3000)
+
 Neste mini-curso serão abordados conceitos essenciais e práticas relacionadas ao DevOps, Docker e Cloud Computing. 
 
 Primeiramente, discutirá o conceito de DevOps, seguido de uma aplicação prática com a criação de um ciclo de CI/CD utilizando pipelines. 
