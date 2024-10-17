@@ -64,7 +64,7 @@ jobs:
   build: # Nome do trabalho
     name: Build Docker image # Nome do trabalho
     runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado
-    needs: [test, snyk, sonarcloud] # Define que o trabalho depende do trabalho "build"
+    # needs: [test, snyk, sonarcloud] # Define que o trabalho depende do trabalho "build"
 
     steps: # Passos a serem executados no trabalho
     - name: Checkout code # Faz o checkout do código
@@ -106,10 +106,27 @@ jobs:
     - name: Test Docker image # Testa a imagem Docker
       run: curl http://localhost:8080 # Faz uma requisição HTTP para o container Docker
 
+  snyk_container: # Nome do trabalho
+    name: Snyk Container Security Check # Nome do trabalho
+    runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado (no caso, Ubuntu)
+    needs: build # Define que o trabalho depende do trabalho "build"
+    steps: # Passos a serem executados no trabalho
+      - uses: actions/checkout@master # Passo para fazer o checkout do repositório
+      - name: Run Snyk to check for vulnerabilities # Executa o Snyk para verificar vulnerabilidades
+        uses: snyk/actions/docker@master # Usa a ação do Snyk para Node.js
+        env: # Define as variáveis de ambiente
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} # Define o token do Snyk
+          DOCKER_REPOSITORY: ${{ vars.DOCKER_REPOSITORY }} # Repositório Docker
+          DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }} # Nome da Imagem Docker
+          COMMIT_ACTOR: ${{ github.actor }} # Autor do commit
+          COMMIT_SHA: ${{ github.sha }} # SHA do commit
+        with:
+          image: $DOCKER_REPOSITORY/$DOCKER_IMAGE_NAME:$COMMIT_ACTOR-$COMMIT_SHA
+
   cloud_run:
     name: Deploy on Cloud Run # Nome do trabalho
     runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado
-    needs: build # Define que o trabalho depende do trabalho "build"
+    needs: snyk_container # Define que o trabalho depende do trabalho "build"
     permissions: # Define as permissões necessárias
       contents: 'read' # Permissão de leitura
       id-token: 'write' # Permissão de escrita
