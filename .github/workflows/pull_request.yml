@@ -64,7 +64,7 @@ jobs:
   build: # Nome do trabalho
     name: Build Docker image # Nome do trabalho
     runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado
-    # needs: [test, snyk, sonarcloud] # Define que o trabalho depende do trabalho "build"
+    needs: [test, snyk, sonarcloud] # Define que o trabalho depende do trabalho "build"
 
     steps: # Passos a serem executados no trabalho
     - name: Checkout code # Faz o checkout do código
