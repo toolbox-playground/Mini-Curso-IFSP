@@ -23,10 +23,48 @@ jobs:
     - name: Run tests # Nome do passo
       run: cd nodejs && npm test # Comando para executar os testes do projeto
 
+  snyk: # Nome do trabalho
+    name: Snyk Security Check # Nome do trabalho
+    runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado (no caso, Ubuntu)
+    needs: test # Define que o trabalho depende do trabalho "build"
+    steps: # Passos a serem executados no trabalho
+      - uses: actions/checkout@master # Passo para fazer o checkout do repositório
+      - name: Run Snyk to check for vulnerabilities # Executa o Snyk para verificar vulnerabilidades
+        uses: snyk/actions/node@master # Usa a ação do Snyk para Node.js
+        with: # Define os parâmetros da ação
+          args: --all-projects # Veirifica todas as dependências do projeto
+        env: # Define as variáveis de ambiente
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} # Define o token do Snyk
+
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ secrets.SONAR_ORG }}
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.projectName=${{ secrets.SONAR_PROJECT_NAME }}
+            -Dsonar.projectVersion=1.0
+            -Dsonar.sources=nodejs
+            -Dsonar.language=js
+            -Dsonar.sourceEncoding=UTF-8
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   build: # Nome do trabalho
     name: Build Docker image # Nome do trabalho
     runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado
-    needs: test # Define que o trabalho depende do trabalho "test"
+    needs: [test, snyk, sonarcloud] # Define que o trabalho depende do trabalho "build"
 
     steps: # Passos a serem executados no trabalho
     - name: Checkout code # Faz o checkout do código
@@ -66,48 +104,12 @@ jobs:
       run: docker ps -f 'name=nodejs' # Checa se o container está rodando
 
     - name: Test Docker image # Testa a imagem Docker
-      run: curl http://localhost:8080 # Faz uma requisição HTTP para o container
-
-  snyk: # Nome do trabalho
-    name: Snyk Security Check # Nome do trabalho
-    runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado (no caso, Ubuntu)
-    steps: # Passos a serem executados no trabalho
-      - uses: actions/checkout@master # Passo para fazer o checkout do repositório
-      - name: Run Snyk to check for vulnerabilities # Executa o Snyk para verificar vulnerabilidades
-        uses: snyk/actions/node@master # Usa a ação do Snyk para Node.js
-        with: # Define os parâmetros da ação
-          args: --all-projects # Veirifica todas as dependências do projeto
-        env: # Define as variáveis de ambiente
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} # Define o token do Snyk
-
-  sonarcloud:
-    name: SonarCloud
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          args: >
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-            -Dsonar.organization=${{ secrets.SONAR_ORG }}
-            -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
-            -Dsonar.projectName=${{ secrets.SONAR_PROJECT_NAME }}
-            -Dsonar.projectVersion=1.0
-            -Dsonar.sources=nodejs
-            -Dsonar.language=js
-            -Dsonar.sourceEncoding=UTF-8
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: curl http://localhost:8080 # Faz uma requisição HTTP para o container Docker
 
   cloud_run:
     name: Deploy on Cloud Run # Nome do trabalho
     runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado
-    needs: [build, snyk, sonarcloud] # Define que o trabalho depende do trabalho "build"
+    needs: build # Define que o trabalho depende do trabalho "build"
     permissions: # Define as permissões necessárias
       contents: 'read' # Permissão de leitura
       id-token: 'write' # Permissão de escrita
