@@ -6,11 +6,11 @@
   <img src="img/mini-curso.png" alt="Slides do Curso">
 </a>
 
-<p style="text-align:center;">
+<div align="center">
     <a href="https://docs.google.com/presentation/d/e/2PACX-1vTkr15PAkf7aTexkYRFHHB8Ro32c4R20aWf7dTKRDm2QY3FmUoZ9z3NAl17LeLAw0rUNP0Rc3u6fmOq/pub?start=false&loop=false&delayms=3000" target="_blank">
         Apresentação
     </a>
-</p>
+</div>
 
 Neste mini-curso serão abordados conceitos essenciais e práticas relacionadas ao DevOps, Docker e Cloud Computing. 
 
