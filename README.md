@@ -198,7 +198,7 @@ gcloud iam workload-identity-pools providers create-oidc ifsp-github-actions-oid
 --issuer-uri="https://token.actions.githubusercontent.com/" \
 --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.repository_owner=assertion.repository_owner,attribute.branch=assertion.sub.extract('/heads/{branch}/')" \
 --location=global \
---attribute-condition="assertion.repository_owner=='Mini-Curso-IFSP'"
+--attribute-condition="assertion.repository_owner=='toolbox-playground'"
 ```
 
 Lembrar de substituir a service-accounts para a sua chave de serviço, o principalSet para o seu provedor criado no GCP e nome do repositório que você quer autorizar.
@@ -206,7 +206,7 @@ Lembrar de substituir a service-accounts para a sua chave de serviço, o princip
 ```bash
 gcloud iam service-accounts add-iam-policy-binding github-actions@toolbox-sandbox-388523.iam.gserviceaccount.com \
   --role="roles/iam.workloadIdentityUser" \
---member="principalSet://iam.googleapis.com/projects/794011605223/locations/global/workloadIdentityPools/ifsp-github-toolbox-actions-pool/attribute.repository/Mini-Curso-IFSP/devops"
+--member="principalSet://iam.googleapis.com/projects/794011605223/locations/global/workloadIdentityPools/ifsp-github-toolbox-actions-pool/attribute.repository/toolbox-playground/Mini-Curso-IFSP"
 ```
 
 Adicionar no Repository Secret
