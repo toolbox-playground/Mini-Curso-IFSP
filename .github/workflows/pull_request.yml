@@ -81,6 +81,30 @@ jobs:
         env: # Define as variáveis de ambiente
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }} # Define o token do Snyk
 
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.organization=${{ secrets.SONAR_ORG }}
+            -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+            -Dsonar.projectName=${{ secrets.SONAR_PROJECT_NAME }}
+            -Dsonar.projectVersion=1.0
+            -Dsonar.sources=app
+            -Dsonar.language=js
+            -Dsonar.sourceEncoding=UTF-8
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
   cloud_run:
     name: Deploy on Cloud Run # Nome do trabalho
     runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado
