@@ -71,7 +71,6 @@ jobs:
   snyk: # Nome do trabalho
     name: Snyk Security Check # Nome do trabalho
     runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado (no caso, Ubuntu)
-    needs: build # Define que o trabalho depende do trabalho "build"
     steps: # Passos a serem executados no trabalho
       - uses: actions/checkout@master # Passo para fazer o checkout do repositório
       - name: Run Snyk to check for vulnerabilities # Executa o Snyk para verificar vulnerabilidades
