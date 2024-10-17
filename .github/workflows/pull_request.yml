@@ -108,7 +108,7 @@ jobs:
   cloud_run:
     name: Deploy on Cloud Run # Nome do trabalho
     runs-on: ubuntu-latest # Sistema operacional em que o trabalho será executado
-    needs: [build, snyk] # Define que o trabalho depende do trabalho "build"
+    needs: [build, snyk, sonarcloud] # Define que o trabalho depende do trabalho "build"
     permissions: # Define as permissões necessárias
       contents: 'read' # Permissão de leitura
       id-token: 'write' # Permissão de escrita
