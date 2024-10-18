@@ -23,6 +23,8 @@ Em seguida, será apresentado o conceito de Docker e, na prática, o processo de
 
 Este repositório serve como laboratório para a prática e o uso do GitHub Actions para criação de pipelines que possuem a finalizade de automatizar o processo de CI/CD build, testes e deploy na Cloud Run
 
+O repositório contem uma pasta chamada [nodejs](./nodejs/) onde se encontra a nossa aplicação Node.js que utiliza o framework Express para gerenciar rotas e servidores, e as bibliotecas Mocha e Cheerio para testes. A pasta [nodejs](./nodejs/) inclui um [Dockerfile](./nodejs/Dockerfile) para containerização, um [index.html](./nodejs/index.html) para a interface do usuário, e um [server.js](./nodejs/server.js) que é o servidor principal da aplicação. O arquivo [package.json](./nodejs/package.json) gerencia as dependências do projeto e scripts de execução. A pasta [test](./nodejs/test/) contém testes para garantir a qualidade do código, utilizando Mocha como framework de testes e Cheerio para manipulação e análise de HTML.
+
 ## GitHub Actions
 O GitHub Actions é uma plataforma de automação que permite criar fluxos de trabalho personalizados para o seu repositório. Neste desafio, utilizamos o GitHub Actions para executar as seguintes etapas:
 
