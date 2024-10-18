@@ -72,11 +72,14 @@ jobs: # Define os trabalhos a serem execut
       with: # Define as variáveis de autenticação
         workload_identity_provider: ${{ secrets.WORKLOAD_IDENTIFIER_PROVIDER }} # Provedor de identidade do workload
         service_account: ${{ secrets.SERVICE_ACCOUNT }} # Conta de serviço
+
+    - name: Lowercase the repo name
+      run: echo "USUARIO=${github.actor,,}" >>${GITHUB_ENV}
       
     - id: 'deploy' # Define um ID para o passo
       uses: 'google-github-actions/deploy-cloudrun@v2' # Usa a ação de deploy no Cloud Run
       with: 
-        service: ${{ github.actor }} # Nome do serviço no Cloud Run
+        service: ${{ env.USUARIO }} # Nome do serviço no Cloud Run
         image: "${{ vars.DOCKER_REPOSITORY }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ github.actor }}-${{ github.sha }}" # Imagem a ser usada no Cloud Run
         flags: '--allow-unauthenticated' # Flags para o deploy no Cloud Run que libera o acesso para usuários não autenticados
 
