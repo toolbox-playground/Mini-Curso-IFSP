@@ -81,9 +81,6 @@ jobs: # Define os trabalhos a serem execut
         flags: '--allow-unauthenticated' # Flags para o deploy no Cloud Run que libera o acesso para usuários não autenticados
         labels: |-
           owner=${{ github.actor }}
-          commit=${{ github.sha }}
-          repository=${{ github.repository }}
-          branch=${{ github.ref }}
 
     - name: 'Access Cloud Run' # Usa o CLI do Google Cloud
       run: "curl -s ${{ steps.deploy.outputs.url }}" # Acessa o Cloud Run
