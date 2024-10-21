@@ -79,6 +79,11 @@ jobs: # Define os trabalhos a serem execut
         service: ${{ github.actor }} # Nome do serviço no Cloud Run
         image: "${{ vars.DOCKER_REPOSITORY }}/${{ vars.DOCKER_IMAGE_NAME }}:${{ github.actor }}-${{ github.sha }}" # Imagem a ser usada no Cloud Run
         flags: '--allow-unauthenticated' # Flags para o deploy no Cloud Run que libera o acesso para usuários não autenticados
+        labels: |-
+          owner=${{ github.actor }}
+          commit=${{ github.sha }}
+          repository=${{ github.repository }}
+          branch=${{ github.ref }}
 
     - name: 'Access Cloud Run' # Usa o CLI do Google Cloud
       run: "curl -s ${{ steps.deploy.outputs.url }}" # Acessa o Cloud Run
